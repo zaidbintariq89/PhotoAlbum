@@ -11,7 +11,7 @@ class HeaderInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val app = App.instance
-        if (app != null && !app.isConnectedToInternet()) {
+        if (!app.isConnectedToInternet()) {
             throw IOException(app.getString(R.string.internet_not_available))
         }
 
