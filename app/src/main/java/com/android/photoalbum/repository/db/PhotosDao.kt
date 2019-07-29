@@ -1,6 +1,9 @@
 package com.android.photoalbum.repository.db
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.*
+import com.android.photoalbum.model.AlbumsDetails
 import com.android.photoalbum.model.PhotosModel
 import com.android.photoalbum.utils.RoomConfig
 
@@ -14,14 +17,41 @@ interface PhotosDao {
     fun insertAnAlbum(album: PhotosModel)
 
     @Query(RoomConfig.SELECT_ALL_PHOTOS)
-    fun getAll(): List<PhotosModel>
+    fun getAll(): LiveData<List<PhotosModel>>
 
-    @Query("SELECT * FROM photos WHERE id IN (:photoIds)")
-    fun loadAllAlbumsByIds(photoIds: IntArray): List<PhotosModel>
+    // for Testing purpose
+    @Query(RoomConfig.SELECT_ALL_PHOTOS)
+    fun getAllAlbums(): List<PhotosModel>
+
+    @Query("SELECT * FROM photos WHERE albumId = :photoId")
+    fun loadAllAlbumsByIds(photoId: Int): List<PhotosModel>
+
+    @Query("SELECT DISTINCT albumId FROM photos")
+    fun getDistinctAlbumIds(): IntArray
 
     @Delete
     fun delete(album: PhotosModel)
 
     @Query("DELETE FROM photos")
     fun deleteAll()
+
+    @Transaction
+    fun updateContentsInDb(photos: List<PhotosModel>) {
+        deleteAll()
+        insertAllPhotoAlbums(photos)
+    }
+
+    @Transaction
+    fun getAlbumsByGroup(): LiveData<List<AlbumsDetails>> {
+        val liveData = MutableLiveData<List<AlbumsDetails>>()
+        val listAlbums = ArrayList<AlbumsDetails>()
+
+        val albumIds = getDistinctAlbumIds()
+        albumIds.forEach {
+            val list = loadAllAlbumsByIds(it)
+            listAlbums.add(AlbumsDetails(it, list))
+        }
+        liveData.value = listAlbums
+        return liveData
+    }
 }
