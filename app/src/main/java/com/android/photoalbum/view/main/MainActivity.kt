@@ -3,9 +3,12 @@ package com.android.photoalbum.view.main
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.photoalbum.R
-import com.android.photoalbum.model.PhotosModel
+import com.android.photoalbum.adapter.AlbumsAdapter
+import com.android.photoalbum.model.AlbumsDetails
 import com.android.photoalbum.utils.showToast
 import com.android.photoalbum.view.AppBaseActivity
 import com.android.photoalbum.viewmodel.BaseViewModel
@@ -36,7 +39,8 @@ class MainActivity : AppBaseActivity(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun loadAllPhotos() {
-        mainViewModel.getAllAlbums().observe(this, Observer { albums ->
+        mainViewModel.getAllAlbums()
+        mainViewModel.albumsDetailsLV.observe(this, Observer { albums ->
             if (albums.isEmpty()) {
                 mainViewModel.fetchAlbumsFromServer()
             } else {
@@ -45,8 +49,14 @@ class MainActivity : AppBaseActivity(), SwipeRefreshLayout.OnRefreshListener {
         })
     }
 
-    private fun bindAlbumsAdapter(albums: List<PhotosModel>) {
+    private fun bindAlbumsAdapter(albums: List<AlbumsDetails>) {
+        val linearLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL,false)
+        albums_recycler.layoutManager = linearLayoutManager
 
+        val adapter = AlbumsAdapter(this)
+        adapter.setAlbumsData(albums)
+
+        albums_recycler.adapter = adapter
     }
 
     override fun render(state: ViewState) {
@@ -56,6 +66,10 @@ class MainActivity : AppBaseActivity(), SwipeRefreshLayout.OnRefreshListener {
 
                 if (!state.error.isNullOrEmpty()) {
                     showToast(state.error)
+                }
+
+                if (state.dataFound) {
+                    mainViewModel.getAllAlbums()
                 }
             }
         }

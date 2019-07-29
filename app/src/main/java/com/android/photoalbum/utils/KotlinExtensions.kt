@@ -7,6 +7,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.Toast
+import com.android.photoalbum.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -51,6 +52,6 @@ fun ImageView.loadImage(resourceId: Int) {
 
 fun ImageView.loadImage(path: String) {
     Glide.with(this)
-        .load(path)
+        .load(path).placeholder(R.mipmap.ic_launcher)
         .into(this)
 }

@@ -42,8 +42,7 @@ interface PhotosDao {
     }
 
     @Transaction
-    fun getAlbumsByGroup(): LiveData<List<AlbumsDetails>> {
-        val liveData = MutableLiveData<List<AlbumsDetails>>()
+    fun getAlbumsByGroup(): List<AlbumsDetails> {
         val listAlbums = ArrayList<AlbumsDetails>()
 
         val albumIds = getDistinctAlbumIds()
@@ -51,7 +50,6 @@ interface PhotosDao {
             val list = loadAllAlbumsByIds(it)
             listAlbums.add(AlbumsDetails(it, list))
         }
-        liveData.value = listAlbums
-        return liveData
+        return listAlbums
     }
 }
