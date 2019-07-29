@@ -1,5 +1,6 @@
 package com.android.photoalbum
 
+import com.android.photoalbum.model.AlbumsDetails
 import com.android.photoalbum.model.PhotosModel
 import com.android.photoalbum.repository.PhotosRepo
 import com.android.photoalbum.repository.PhotosRepoImp
@@ -50,6 +51,20 @@ class PhotosRepositoryTest {
         // get albums
         val albumsFromDb = roomDataSource.photosDao().getAllAlbums()
 
+        // Given that the RoomDataSource returns saved album
+        Assert.assertEquals(listOf(album),albumsFromDb)
+    }
+
+    @Test
+    fun testAlbumsByGroup_whenParsed() {
+        val photo = PhotosModel(uid = 1,id = 1,albumId = 1,title = "testAlbum",thumbnailUrl = "http://google.com")
+        val album = AlbumsDetails(albumId = 1, albumList = listOf(photo))
+
+        Mockito.`when`(roomDataSource.photosDao().getAlbumsByGroup())
+            .thenReturn(listOf(album))
+
+        // get albums
+        val albumsFromDb = roomDataSource.photosDao().getAlbumsByGroup()
         // Given that the RoomDataSource returns saved album
         Assert.assertEquals(listOf(album),albumsFromDb)
     }
