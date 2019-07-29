@@ -1,7 +1,6 @@
 package com.android.photoalbum.view.main
 
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,18 +34,7 @@ class MainActivity : AppBaseActivity(), SwipeRefreshLayout.OnRefreshListener {
 
         swipeRefreshView.setOnRefreshListener(this)
         // get photos
-        loadAllPhotos()
-    }
-
-    private fun loadAllPhotos() {
-        mainViewModel.getAllAlbums()
-        mainViewModel.albumsDetailsLV.observe(this, Observer { albums ->
-            if (albums.isEmpty()) {
-                mainViewModel.fetchAlbumsFromServer()
-            } else {
-                bindAlbumsAdapter(albums)
-            }
-        })
+        mainViewModel.getAllAlbums(false)
     }
 
     private fun bindAlbumsAdapter(albums: List<AlbumsDetails>) {
@@ -68,14 +56,14 @@ class MainActivity : AppBaseActivity(), SwipeRefreshLayout.OnRefreshListener {
                     showToast(state.error)
                 }
 
-                if (state.dataFound) {
-                    mainViewModel.getAllAlbums()
+                if (state.data != null && state.data is List<*>) {
+                    bindAlbumsAdapter(state.data as List<AlbumsDetails>)
                 }
             }
         }
     }
 
     override fun onRefresh() {
-        mainViewModel.fetchAlbumsFromServer()
+        mainViewModel.getAllAlbums(true)
     }
 }
