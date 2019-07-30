@@ -1,11 +1,11 @@
 package com.android.photoalbum.repository.db
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 import com.android.photoalbum.model.AlbumsDetails
 import com.android.photoalbum.model.PhotosModel
 import com.android.photoalbum.utils.RoomConfig
+import io.reactivex.Flowable
 
 @Dao
 interface PhotosDao {
@@ -52,4 +52,8 @@ interface PhotosDao {
         }
         return listAlbums
     }
+
+    // get All data with Rx
+    @Query(RoomConfig.SELECT_ALL_PHOTOS)
+    fun getAllPhotosRx() : Flowable<List<PhotosModel>>
 }

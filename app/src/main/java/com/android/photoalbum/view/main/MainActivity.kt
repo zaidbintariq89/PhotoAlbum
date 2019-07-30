@@ -34,7 +34,7 @@ class MainActivity : AppBaseActivity(), SwipeRefreshLayout.OnRefreshListener {
 
         swipeRefreshView.setOnRefreshListener(this)
         // get photos
-        mainViewModel.getAllAlbums(false)
+        mainViewModel.getAllAlbumsRx()
     }
 
     private fun bindAlbumsAdapter(albums: List<AlbumsDetails>) {
@@ -64,6 +64,11 @@ class MainActivity : AppBaseActivity(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
-        mainViewModel.getAllAlbums(true)
+        mainViewModel.getAllAlbumsRx()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mainViewModel.subscription.clear()
     }
 }

@@ -1,6 +1,7 @@
 package com.android.photoalbum
 
 import android.app.Application
+import com.android.photoalbum.repository.NetworkRepository
 import com.android.photoalbum.repository.PhotosRepo
 import com.android.photoalbum.repository.PhotosRepoImp
 import com.android.photoalbum.repository.core.ServerInjector
@@ -12,6 +13,7 @@ class App : Application() {
         lateinit var instance: App
         private val apiService = ServerInjector.getInstance().provideApiService()
         private var photosRepo: PhotosRepo? = null
+        private var networkRepo: NetworkRepository? = null
 
         // Dagger can be used here for dependency Injection
         fun getPhotosRepository(): PhotosRepo? {
@@ -23,6 +25,13 @@ class App : Application() {
 
         private fun getAppDataBase(): RoomDataSource {
             return RoomDataSource.getInstance(instance)
+        }
+
+        fun getNetworkRepository() : NetworkRepository {
+            if (networkRepo == null) {
+                networkRepo = NetworkRepository(apiService, getAppDataBase())
+            }
+            return networkRepo!!
         }
     }
 
