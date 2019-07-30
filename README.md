@@ -20,6 +20,8 @@ Reactive Extensions (Rx) are a set of interfaces and methods which provide a way
 
 LiveData is lifecycle-aware, meaning it respects the lifecycle of other app components, such as activities, fragments, or services. This awareness ensures LiveData only updates app component observers that are in an active lifecycle state.
 
+Live data along with ViewModel is Activity LifeCycle aware whereas Rx is not.
+
 Libraries used in the project
 ------------------------------------
 * [Architecture][0] - A collection of libraries that help you design robust, testable, and

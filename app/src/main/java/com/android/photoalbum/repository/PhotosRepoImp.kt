@@ -9,15 +9,17 @@ import com.android.photoalbum.repository.listener.RepoResponseListener
 import com.android.photoalbum.viewstate.ApiCallViewState
 import com.android.photoalbum.viewstate.ViewState
 
-class PhotosRepoImp(private val apiService: APIService,
-                    private val appDatabase: RoomDataSource) : PhotosRepo {
+class PhotosRepoImp(
+    private val apiService: APIService,
+    private val appDatabase: RoomDataSource
+) : PhotosRepo {
 
     // this is for Testing purpose
     override fun getAllPhotos(): List<PhotosModel> {
         return appDatabase.photosDao().getAllAlbums()
     }
 
-    override fun getAllAlbums(forceRefresh: Boolean,stateLiveData: MutableLiveData<ViewState>) {
+    override fun getAllAlbums(forceRefresh: Boolean, stateLiveData: MutableLiveData<ViewState>) {
         if (!forceRefresh) {
             Thread {
                 val list = appDatabase.photosDao().getAlbumsByGroup()
@@ -39,7 +41,7 @@ class PhotosRepoImp(private val apiService: APIService,
                 override fun onSuccess(response: List<PhotosModel>) {
                     if (response.isNotEmpty()) {
                         // update contents in database
-                        insertIntoDb(response,stateLiveData)
+                        insertIntoDb(response, stateLiveData)
                     } else {
                         stateLiveData.postValue(ApiCallViewState(loading = false, error = "No Data Found", data = null))
                     }
@@ -57,7 +59,7 @@ class PhotosRepoImp(private val apiService: APIService,
             appDatabase.photosDao().updateContentsInDb(response)
             // load saved data from Db and post to view
             val list = appDatabase.photosDao().getAlbumsByGroup()
-            stateLiveData.postValue(ApiCallViewState(loading = false, error = "No Data Found", data = list))
+            stateLiveData.postValue(ApiCallViewState(loading = false, error = null, data = list))
         }.start()
     }
 }
